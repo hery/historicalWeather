@@ -1,5 +1,4 @@
 package com.daemgahe.historicalWeather;
-// daemgahe = DAvid, EMily, GAurav, HEry
 
 import android.app.Activity;
 import android.os.Bundle;
