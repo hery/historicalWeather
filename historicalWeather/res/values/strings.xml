@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, HistoricalWeatherActivity!</string>
-    <string name="app_name">Weather Graph</string>
-
+    <string name="zipString">Enter zipcode:</string>
+     <string name="dateString">Set start and end date:</string>
+    <string name="app_name">Weather Graph</string>	
+    <string name="submit">Submit</string>
+	<string name="resultingChartString">Resulting Chart</string>
 </resources>
