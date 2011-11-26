@@ -2,7 +2,7 @@
 <resources>
 
     <string name="zipString">Enter zipcode:</string>
-     <string name="dateString">Set start and end date:</string>
+    <string name="dateString">Set start and end date:</string>
     <string name="app_name">Weather Graph</string>	
     <string name="submit">Submit</string>
 	<string name="resultingChartString">Resulting Chart</string>
