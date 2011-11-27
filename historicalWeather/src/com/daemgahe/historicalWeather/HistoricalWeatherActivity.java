@@ -35,6 +35,7 @@ public class HistoricalWeatherActivity extends Activity
         	public void onClick(View v) 
         	{
         		zipCode = ZipCodeField.getText().toString();
+        		// need to check and validate zipcode length
         		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
         		testString.setText(URL);
         		// Fetch data from server
