@@ -1,6 +1,7 @@
 package com.daemgahe.historicalWeather;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -35,8 +36,14 @@ public class HistoricalWeatherActivity extends Activity
         	public void onClick(View v) 
         	{
         		zipCode = ZipCodeField.getText().toString();
-        		// need to check and validate zipcode length
+        		
+        		if (zipCode.length() != 5)
+        		{
+        			URL = "Invalid zipcode length.";
+        		} else
+        		{
         		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
+        		}
         		testString.setText(URL);
         		// Fetch data from server
         		// Parse data        		
