@@ -37,7 +37,6 @@ public class HistoricalWeatherActivity extends Activity
         		zipCode = ZipCodeField.getText().toString();
         		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
         		testString.setText(URL);
-        		// Process zipcode
         		// Fetch data from server
         		// Parse data        		
         		// GoToDateScreen();        		
