@@ -75,7 +75,7 @@ public class HistoricalWeatherActivity extends Activity
         	}
         }
         );  
-    }
+    } 
     
     protected void GoToDateScreen()
     {
