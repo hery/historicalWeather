@@ -23,8 +23,7 @@ public class HistoricalWeatherActivity extends Activity
         {
         	public void onClick(View v) 
         	{
-        		GoToDateScreen();
-        		
+        		GoToDateScreen();        		
         	}
         }
         );  
