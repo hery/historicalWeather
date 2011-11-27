@@ -10,6 +10,7 @@
         android:text="@string/zipString" />
     
     <EditText 
+        android:id="@+id/zipcodefield"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:numeric="integer"
@@ -20,5 +21,11 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/submit"/>
+    
+    <TextView
+        android:id="@+id/testString"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 
 </LinearLayout>
