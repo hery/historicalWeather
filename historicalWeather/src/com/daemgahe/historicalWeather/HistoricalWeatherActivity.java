@@ -52,7 +52,7 @@ public class HistoricalWeatherActivity extends Activity
         		
         		if (zipCode.length() != 5)
         		{
-        			Log.v("Weather Graph", "Inside invalid zip try block");
+ /**       			Log.v("Weather Graph", "Inside invalid zip try block");
         			URL = "Invalid zipcode length.";
         			testString.setText(URL);
         		} else
@@ -68,8 +68,8 @@ public class HistoricalWeatherActivity extends Activity
 					e.printStackTrace();
 				}
         		// Fetch data from server
-        		// Parse data 10       		
-        		// GoToDateScreen();  
+        		// Parse data 10       		*/
+        		GoToDateScreen();  
         		}
 
         	}
@@ -83,7 +83,7 @@ public class HistoricalWeatherActivity extends Activity
     	startActivity(i);
     }
     
-    public void getJson() throws Exception
+ /**   public void getJson() throws Exception
     {
     	BufferedReader in = null;
     	try
@@ -115,7 +115,7 @@ public class HistoricalWeatherActivity extends Activity
     				e.printStackTrace();
     			}
     		}
-    	}
-    }
+    	} 
+    }*/
      
 }
