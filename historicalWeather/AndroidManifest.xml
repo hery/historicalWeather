@@ -19,5 +19,5 @@
         </activity>
         <activity android:name="DateScreen" android:label="@string/dateScreenTitle"></activity>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
