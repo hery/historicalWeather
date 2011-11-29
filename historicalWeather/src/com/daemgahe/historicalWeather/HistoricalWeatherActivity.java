@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 public class HistoricalWeatherActivity extends Activity 
 {
-	
+	// doing some modifications...
 	private Button submitZipCodeButton;
 	private EditText ZipCodeField;
 	private static final String DEVKEY = "bf90362e52a6012e";
