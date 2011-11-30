@@ -31,7 +31,7 @@ public class HistoricalWeatherActivity extends Activity
 	private String zipCode;
 	private String URL;
 	private TextView testString;
-	private String myString;	// debug string
+	private String myIcao;	// debug string
 	private String jsonOutput;
 	
     /** Called when the activity is first created. */
@@ -82,20 +82,18 @@ public class HistoricalWeatherActivity extends Activity
 					JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
 					JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
 					JSONArray stationsArray = airportObject.getJSONArray("station");
-					myString = stationsArray.getJSONObject(0).getString("icao").toString();
+					myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
 					//myString = locationObject.getString("tz_long");	// debug ok
-					testString.setText(myString);
+					//testString.setText(myIcao);		// debug only
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					myString = "Error.";
-					testString.setText(myString);
-				}
-        		    		
+					myIcao = "Error.";
+					testString.setText(myIcao);
+				}       		    		
         		// pass value to DateScreen and
         		// GoToDateScreen();  
         		}
-
         	}
         }
         );  
@@ -103,8 +101,11 @@ public class HistoricalWeatherActivity extends Activity
     
     protected void GoToDateScreen()
     {
+    	Bundle bundle = new Bundle();
+    	bundle.putString("icao", myIcao);
     	Intent i = new Intent(this, DateScreen.class);
-    	startActivity(i);
+    	i.putExtras(bundle);
+    	startActivityForResult(i,0);
     }
     
     public void getJson() throws Exception

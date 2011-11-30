@@ -27,6 +27,8 @@ public class DateScreen extends Activity
         startDate.setText(df.format(c.getTime()));
         EditText endDate = (EditText) findViewById(R.id.end_date);
         endDate.setText(df.format(d));
+        
+        
     }
     
 
