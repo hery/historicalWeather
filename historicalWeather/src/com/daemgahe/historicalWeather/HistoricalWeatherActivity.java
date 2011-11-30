@@ -9,6 +9,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,6 +31,7 @@ public class HistoricalWeatherActivity extends Activity
 	private String zipCode;
 	private String URL;
 	private TextView testString;
+	private String myString;	// debug string
 	private String jsonOutput;
 	
     /** Called when the activity is first created. */
@@ -61,14 +65,34 @@ public class HistoricalWeatherActivity extends Activity
         		try {
         			Log.v("Weather Graph", "Inside successful zip try block");
 					getJson();
-					testString.setText(jsonOutput);
+					// testString.setText(jsonOutput); // debug line to show get request is working
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.v("Weather Graph", "Inside successful zip catch block");
 					e.printStackTrace();
 				}
-        		// Fetch data from server
-        		// Parse data 10       		
+        		
+        		// Declare and initialize JSONObject 
+        		JSONObject jObject = null;
+        		
+        		try {
+        			// Create JSONObject from the JSON file string resulting from the zipcode get request
+					jObject = new JSONObject(jsonOutput);
+					JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
+					JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
+					JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
+					JSONArray stationsArray = airportObject.getJSONArray("station");
+					myString = stationsArray.getJSONObject(0).getString("icao").toString();
+					//myString = locationObject.getString("tz_long");	// debug ok
+					testString.setText(myString);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					myString = "Error.";
+					testString.setText(myString);
+				}
+        		    		
+        		// pass value to DateScreen and
         		// GoToDateScreen();  
         		}
 
