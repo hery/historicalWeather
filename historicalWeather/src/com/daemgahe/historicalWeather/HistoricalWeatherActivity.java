@@ -84,15 +84,15 @@ public class HistoricalWeatherActivity extends Activity
 					JSONArray stationsArray = airportObject.getJSONArray("station");
 					myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
 					//myString = locationObject.getString("tz_long");	// debug ok
-					//testString.setText(myIcao);		// debug only
+					testString.setText(myIcao);		// debug only
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					myIcao = "Error.";
 					testString.setText(myIcao);
 				}       		    		
-        		// pass value to DateScreen and
-        		// GoToDateScreen();  
+        		 // the value of myIcao is passed with the intent, in GoToDateScreen() 
+        		 GoToDateScreen();  
         		}
         	}
         }
@@ -103,9 +103,9 @@ public class HistoricalWeatherActivity extends Activity
     {
     	Bundle bundle = new Bundle();
     	bundle.putString("icao", myIcao);
-    	Intent i = new Intent(this, DateScreen.class);
-    	i.putExtras(bundle);
-    	startActivityForResult(i,0);
+    	Intent zipcodeToDate = new Intent(this, DateScreen.class);
+    	zipcodeToDate.putExtras(bundle);
+    	startActivityForResult(zipcodeToDate,0);
     }
     
     public void getJson() throws Exception
