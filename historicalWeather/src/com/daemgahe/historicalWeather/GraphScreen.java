@@ -27,7 +27,7 @@ import android.widget.TextView;
 public class GraphScreen extends Activity {
 	
 	private XYPlot theGraph;
-	private TextView debug;
+	//private TextView debug;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -35,7 +35,7 @@ public class GraphScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chart);
         Bundle bundle = this.getIntent().getExtras();
-        debug = (TextView) findViewById(R.id.debug);
+        //debug = (TextView) findViewById(R.id.debug);
         
         long startDate = bundle.getLong("startDate");
         long endDate = bundle.getLong("endDate");
