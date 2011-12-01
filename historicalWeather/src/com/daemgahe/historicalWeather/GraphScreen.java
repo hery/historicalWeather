@@ -15,6 +15,7 @@ import com.androidplot.xy.XYStepMode;
 import com.androidplot.Plot;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Shader;
 import android.graphics.DashPathEffect;
@@ -22,11 +23,15 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class GraphScreen extends Activity {
 	
 	private XYPlot theGraph;
+	private Button exitButton;
+	private Button startOverButton;
 	//private TextView debug;
 	
     @Override
@@ -116,6 +121,37 @@ public class GraphScreen extends Activity {
         // by default, AndroidPlot displays developer guides to aid in laying out your plot.
         // To get rid of them call disableAllMarkup():
         theGraph.disableAllMarkup();
+        
+        exitButton = (Button) findViewById(R.id.exitButton);
+        startOverButton = (Button) findViewById(R.id.startOverButton);
+        
+        startOverButton.setOnClickListener
+        (new View.OnClickListener() 
+        {	
+        	@Override
+			public void onClick(View v) 
+        	{
+                GoToFirstScreen();
+        	}
+        });
+        
+        exitButton.setOnClickListener
+        (new View.OnClickListener() 
+        {	
+        	@Override
+			public void onClick(View v) 
+        	{
+                moveTaskToBack(true);
+        	}
+        });
+        
     }
+    
+    protected void GoToFirstScreen()
+    {
+    	Intent goBackToFirstScreen = new Intent(this, HistoricalWeatherActivity.class);
+    	startActivityForResult(goBackToFirstScreen,0);
+    }
+    
 
 }
