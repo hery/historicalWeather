@@ -1,5 +1,9 @@
 package com.daemgahe.historicalWeather;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -7,8 +11,14 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +40,7 @@ public class DateScreen extends Activity
 	private String endday;
 	
 	private String completeURL;
+	private String graphData;
 	
     /** Called when the activity is first created. */
     @Override
@@ -54,14 +65,16 @@ public class DateScreen extends Activity
         Pattern pattern = Pattern.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})");
         
         Matcher matcher = pattern.matcher(startDateValue);
-        if (matcher.find()) {
+        if (matcher.find()) 
+        {
         	startyear  = matcher.group(1);
         	startmonth = matcher.group(2);
         	startday = matcher.group(3);		
         }	
         
         Matcher matcher1 = pattern.matcher(endDateValue);
-        if (matcher1.find()) {
+        if (matcher1.find()) 
+        {
         	endyear  = matcher1.group(1);
         	endmonth = matcher1.group(2);
         	endday = matcher1.group(3);		
@@ -71,7 +84,7 @@ public class DateScreen extends Activity
         Bundle bundle = this.getIntent().getExtras();
         
         // Prepare different parts of the URL
-        String host = "www.wunderground.com/history/airport/";
+        String host = "http://www.wunderground.com/history/airport/";
         theIcao = bundle.getString("icao");
         String file = "CustomHistory.html?";
         String urlEnd = "&req_city=NA&req_state=NA&req_statename=NA&format=1";
@@ -87,8 +100,51 @@ public class DateScreen extends Activity
         {	
         	public void onClick(View v) 
         	{
-        		 debug.setText(completeURL);
+        		  //debug.setText(completeURL);
+        		try {
+					getData();
+					debug.setText(graphData);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
         	}
         });
     }
+    
+    public void getData() throws Exception
+    {
+    	BufferedReader in = null;
+    	try
+    	{
+    		HttpClient client = new DefaultHttpClient ();
+    		HttpGet request = new HttpGet();
+    		request.setURI(new URI(completeURL));
+    		HttpResponse response = client.execute(request);
+    		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			StringBuffer sb = new StringBuffer("");
+			String line = "";
+			String NL = System.getProperty("line.separator");
+			while ((line = in.readLine()) != null)
+			{
+				sb.append(line + NL);
+				Log.v("Weather Graph", line+NL);
+			}
+			in.close();
+			graphData = new String(sb.toString());
+    	} finally 
+    	{
+    		if (in != null) 
+    		{
+    			try
+    			{
+    				in.close();
+    			} catch (IOException e)
+    			{
+    				e.printStackTrace();
+    			}
+    		}
+    	} 
+    }  
 }
+
