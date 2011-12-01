@@ -95,6 +95,7 @@ public class DateScreen extends Activity
         
         debug = (TextView) findViewById(R.id.debugTextView);
         Button submit = (Button) findViewById(R.id.submitButton);
+        Button dataButton = (Button) findViewById(R.id.dataButton);
        
         submit.setOnClickListener
         (new View.OnClickListener() 
@@ -112,6 +113,33 @@ public class DateScreen extends Activity
 				}
         	}
         });
+        
+        dataButton.setOnClickListener
+        (new View.OnClickListener() 
+        {	
+        	public void onClick(View v) 
+        	{
+        		  //debug.setText(completeURL);
+        		try {
+					getData();
+					//debug.setText(graphData);
+					GoToDataScreen();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        });
+        
+    }
+    
+    protected void GoToDataScreen()
+    {
+    	Bundle bundle = new Bundle();
+    	bundle.putString("graph", graphData);
+    	Intent dateToGraph = new Intent(this, DataScreen.class);
+    	dateToGraph.putExtras(bundle);
+    	startActivityForResult(dateToGraph,0);
     }
     
     protected void GoToGraphScreen()
