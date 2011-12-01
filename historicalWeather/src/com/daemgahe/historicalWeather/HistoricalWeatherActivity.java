@@ -9,6 +9,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,6 +31,8 @@ public class HistoricalWeatherActivity extends Activity
 	private String URL;
 	private TextView testString;
 	private String jsonOutput;
+	private String weatherStationCode;
+	private String weatherStationName;
 	
     /** Called when the activity is first created. */
     @Override
@@ -54,14 +58,15 @@ public class HistoricalWeatherActivity extends Activity
         		{
         			Log.v("Weather Graph", "Inside invalid zip try block");
         			URL = "Invalid zipcode length.";
-        			testString.setText(URL);
+        			//testString.setText(URL);
         		} else
         		{
         		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
         		try {
         			Log.v("Weather Graph", "Inside successful zip try block");
 					getJson();
-					testString.setText(jsonOutput);
+					// testString.setText(jsonOutput);
+					parseJSON();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.v("Weather Graph", "Inside successful zip catch block");
@@ -117,5 +122,22 @@ public class HistoricalWeatherActivity extends Activity
     		}
     	}
     }
-     
+    
+    private void parseJSON() {
+    	try {
+			JSONObject jsonObject = new JSONObject(jsonOutput);
+			JSONObject station = jsonObject.getJSONObject("location")
+					.getJSONObject("nearby_weather_stations")
+					.getJSONObject("airport").getJSONArray("station")
+					.getJSONObject(0);
+			this.weatherStationCode = station.getString("icao");
+			this.weatherStationName = station.getString("city");
+			this.testString.setText(this.weatherStationCode + 
+					" (" + this.weatherStationName + ")");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
 }
