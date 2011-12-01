@@ -8,8 +8,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,9 +26,17 @@ import android.widget.TextView;
 public class DateScreen extends Activity 
 {
 	private String theIcao;
-	private Button submit;
+	//private Button submit;
 	private TextView debug;
-	private String myURL;
+	//private String myURL;
+	
+	private EditText startDateField;
+	private EditText endDateField;
+	
+	private DateFormat df;
+	private Calendar calendar;
+	private Date startDate;
+	private Date endDate;
 	
 	private String startyear;
 	private String startmonth;
@@ -50,58 +56,52 @@ public class DateScreen extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.date);
         
-        EditText startDate = (EditText) findViewById(R.id.start_date);
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Date d = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(d);
-        c.roll(Calendar.YEAR, -1);
-        String startDateValue = df.format(c.getTime());
-        startDate.setText(startDateValue);
-        EditText endDate = (EditText) findViewById(R.id.end_date);
-        String endDateValue = df.format(d);
-        endDate.setText(endDateValue);
-        
-        // Use regex to parse dates
-        Pattern pattern = Pattern.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})");
-        
-        Matcher matcher = pattern.matcher(startDateValue);
-        if (matcher.find()) 
-        {
-        	startyear  = matcher.group(1);
-        	startmonth = matcher.group(2);
-        	startday = matcher.group(3);		
-        }	
-        
-        Matcher matcher1 = pattern.matcher(endDateValue);
-        if (matcher1.find()) 
-        {
-        	endyear  = matcher1.group(1);
-        	endmonth = matcher1.group(2);
-        	endday = matcher1.group(3);		
-        }	
+        startDateField = (EditText) findViewById(R.id.start_date);
+        df = new SimpleDateFormat("yyyy-MM-dd");
+        endDate = new Date();
+        calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.roll(Calendar.YEAR, -1);
+        startDate = calendar.getTime();
+        String startDateValue = df.format(startDate);
+        startDateField.setText(startDateValue);
+        endDateField = (EditText) findViewById(R.id.end_date);
+        String endDateValue = df.format(endDate);
+        endDateField.setText(endDateValue);
         
         // Create a bundle to get the intent parameters
         Bundle bundle = this.getIntent().getExtras();
-        
-        // Prepare different parts of the URL
-        String host = "http://www.wunderground.com/history/airport/";
         theIcao = bundle.getString("icao");
-        String file = "CustomHistory.html?";
-        String urlEnd = "&req_city=NA&req_state=NA&req_statename=NA&format=1";
-        
-        // Form URL
-        completeURL = String.format("%s%s/%s/%s/%s/%sdayend=%s&monthend=%s&yearend=%s%s",host,theIcao,startyear,startmonth,startday,file,endday,endmonth,endyear,urlEnd);
         
         debug = (TextView) findViewById(R.id.debugTextView);
-        Button submit = (Button) findViewById(R.id.submitButton);
-        Button dataButton = (Button) findViewById(R.id.dataButton);
+        Button submitButton = (Button) findViewById(R.id.submitButton);
+        // Button dataButton = (Button) findViewById(R.id.dataButton);
        
-        submit.setOnClickListener
+        submitButton.setOnClickListener
         (new View.OnClickListener() 
         {	
-        	public void onClick(View v) 
+        	@Override
+			public void onClick(View v) 
         	{
+                String startDateValue1 = startDateField.getText().toString();
+                String endDateValue1 = endDateField.getText().toString();
+                try {
+					startDate = df.parse(startDateValue1);
+	                endDate = df.parse(endDateValue1);
+				} catch (java.text.ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					return;
+				}
+                calendar.setTime(startDate);
+                startyear = String.format("%04d", calendar.get(Calendar.YEAR));
+                startmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+                startday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+                calendar.setTime(endDate);
+                endyear = String.format("%04d", calendar.get(Calendar.YEAR));
+                endmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+                endday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+                
         		  //debug.setText(completeURL);
         		try {
 					getData();
@@ -114,6 +114,7 @@ public class DateScreen extends Activity
         	}
         });
         
+        /*
         dataButton.setOnClickListener
         (new View.OnClickListener() 
         {	
@@ -123,16 +124,18 @@ public class DateScreen extends Activity
         		try {
 					getData();
 					//debug.setText(graphData);
-					GoToDataScreen();
+					//GoToDataScreen();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         	}
         });
+        */
         
     }
     
+    /*
     protected void GoToDataScreen()
     {
     	Bundle bundle = new Bundle();
@@ -141,11 +144,14 @@ public class DateScreen extends Activity
     	dateToGraph.putExtras(bundle);
     	startActivityForResult(dateToGraph,0);
     }
+    */
     
     protected void GoToGraphScreen()
     {
     	Bundle bundle = new Bundle();
     	bundle.putString("graph", graphData);
+    	bundle.putLong("startDate", startDate.getTime());
+    	bundle.putLong("endDate", endDate.getTime());
     	Intent dateToGraph = new Intent(this, GraphScreen.class);
     	dateToGraph.putExtras(bundle);
     	startActivityForResult(dateToGraph,0);
@@ -153,6 +159,15 @@ public class DateScreen extends Activity
     
     public void getData() throws Exception
     {
+        // Prepare different parts of the URL
+        String host = "http://www.wunderground.com/history/airport/";
+        String file = "CustomHistory.html?";
+        String urlEnd = "&req_city=NA&req_state=NA&req_statename=NA&format=1";
+        
+        // Form URL
+        completeURL = String.format("%s%s/%s/%s/%s/%sdayend=%s&monthend=%s&yearend=%s%s",host,theIcao,startyear,startmonth,startday,file,endday,endmonth,endyear,urlEnd);
+        debug.setText(completeURL);
+        
     	BufferedReader in = null;
     	try
     	{
