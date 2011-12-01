@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -103,13 +104,23 @@ public class DateScreen extends Activity
         		  //debug.setText(completeURL);
         		try {
 					getData();
-					debug.setText(graphData);
+					//debug.setText(graphData);
+					GoToGraphScreen();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         	}
         });
+    }
+    
+    protected void GoToGraphScreen()
+    {
+    	Bundle bundle = new Bundle();
+    	bundle.putString("graph", graphData);
+    	Intent dateToGraph = new Intent(this, GraphScreen.class);
+    	dateToGraph.putExtras(bundle);
+    	startActivityForResult(dateToGraph,0);
     }
     
     public void getData() throws Exception

@@ -7,4 +7,5 @@
     <string name="submit">Submit</string>
 	<string name="resultingChartString">Resulting Chart</string>
 	<string name="dateScreenTitle">Input Start and End Dates</string>
+	<string name="graphScreenTitle">Graph</string>
 </resources>
