@@ -9,6 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,16 +24,15 @@ import android.widget.TextView;
 
 public class HistoricalWeatherActivity extends Activity 
 {
-	
+	// doing some modifications...
 	private Button submitZipCodeButton;
 	private EditText ZipCodeField;
 	private static final String DEVKEY = "bf90362e52a6012e";
 	private String zipCode;
 	private String URL;
 	private TextView testString;
+	private String myIcao;	// debug string
 	private String jsonOutput;
-	private String weatherStationCode;
-	private String weatherStationName;
 	
     /** Called when the activity is first created. */
     @Override
@@ -58,34 +58,54 @@ public class HistoricalWeatherActivity extends Activity
         		{
         			Log.v("Weather Graph", "Inside invalid zip try block");
         			URL = "Invalid zipcode length.";
-        			//testString.setText(URL);
+        			testString.setText(URL);
         		} else
         		{
         		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
         		try {
         			Log.v("Weather Graph", "Inside successful zip try block");
 					getJson();
-					// testString.setText(jsonOutput);
-					parseJSON();
+					// testString.setText(jsonOutput); // debug line to show get request is working
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.v("Weather Graph", "Inside successful zip catch block");
 					e.printStackTrace();
 				}
-        		// Fetch data from server
-        		// Parse data 10       		
-        		// GoToDateScreen();  
+        		
+        		// Declare and initialize JSONObject 
+        		JSONObject jObject = null;
+        		
+        		try {
+        			// Create JSONObject from the JSON file string resulting from the zipcode get request
+					jObject = new JSONObject(jsonOutput);
+					JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
+					JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
+					JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
+					JSONArray stationsArray = airportObject.getJSONArray("station");
+					myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
+					//myString = locationObject.getString("tz_long");	// debug ok
+					testString.setText(myIcao);		// debug only
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					myIcao = "Error.";
+					testString.setText(myIcao);
+				}       		    		
+        		 // the value of myIcao is passed with the intent, in GoToDateScreen() 
+        		 GoToDateScreen();  
         		}
-
         	}
         }
         );  
-    }
+    } 
     
     protected void GoToDateScreen()
     {
-    	Intent i = new Intent(this, DateScreen.class);
-    	startActivity(i);
+    	Bundle bundle = new Bundle();
+    	bundle.putString("icao", myIcao);
+    	Intent zipcodeToDate = new Intent(this, DateScreen.class);
+    	zipcodeToDate.putExtras(bundle);
+    	startActivityForResult(zipcodeToDate,0);
     }
     
     public void getJson() throws Exception
@@ -120,24 +140,7 @@ public class HistoricalWeatherActivity extends Activity
     				e.printStackTrace();
     			}
     		}
-    	}
+    	} 
     }
-    
-    private void parseJSON() {
-    	try {
-			JSONObject jsonObject = new JSONObject(jsonOutput);
-			JSONObject station = jsonObject.getJSONObject("location")
-					.getJSONObject("nearby_weather_stations")
-					.getJSONObject("airport").getJSONArray("station")
-					.getJSONObject(0);
-			this.weatherStationCode = station.getString("icao");
-			this.weatherStationName = station.getString("city");
-			this.testString.setText(this.weatherStationCode + 
-					" (" + this.weatherStationName + ")");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    }
+     
 }

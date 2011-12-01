@@ -31,8 +31,21 @@
         />
 
     <Button
+        android:id="@+id/submitButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/submit" />
+        android:text="Graph" />
+    
+        <Button
+        android:id="@+id/dataButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Data" />
+    
+    <TextView
+       	android:id="@+id/debugTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text=""/> 
 
 </LinearLayout>

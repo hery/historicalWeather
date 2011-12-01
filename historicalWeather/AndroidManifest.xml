@@ -19,6 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name="DateScreen" android:label="@string/dateScreenTitle"></activity>
+        <activity android:name="GraphScreen" android:label="@string/graphScreenTitle"></activity>
+        <activity android:name="DataScreen" android:label="@string/dataScreenTitle"></activity>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
