@@ -107,7 +107,7 @@ public class GraphScreen extends Activity {
         theGraph.addSeries(avgTempSeries, formatter);
  
         // draw a domain tick for each month:
-        theGraph.setDomainStep(XYStepMode.SUBDIVIDE, 12);
+        theGraph.setDomainStep(XYStepMode.SUBDIVIDE, 4);
  
         // customize our domain/range labels
         theGraph.setDomainLabel("Date");
