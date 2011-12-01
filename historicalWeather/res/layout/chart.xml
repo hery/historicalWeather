@@ -4,28 +4,27 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-     	<TextView
+    <TextView
        	android:id="@+id/debug"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text=""/> 	
+        android:text="debug"/> 	
         
     <com.androidplot.xy.XYPlot
 	    android:id="@+id/plot"
 	    android:layout_width="fill_parent"
-	    android:layout_height="400px"
-	    android:layout_marginTop="10px"
-	    android:layout_marginLeft="0px"
-	    android:layout_marginRight="0px"
-	    title="Weather Graph"/>    
+	    android:layout_height="0dip"
+	    android:layout_weight="1"
+	    android:layout_marginTop="10dip"
+	    title="Weather Graph" />    
 	    
-     <Button
+    <Button
         android:id="@+id/exitButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Exit" />
        
-     <Button
+    <Button
         android:id="@+id/startOverButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
