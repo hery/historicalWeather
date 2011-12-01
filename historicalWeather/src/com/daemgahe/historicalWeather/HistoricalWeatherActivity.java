@@ -48,7 +48,7 @@ public class HistoricalWeatherActivity extends Activity
         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
         {
-        	
+        	@Override
         	public void onClick(View v) 
         	{
         		

@@ -36,11 +36,11 @@
         android:layout_height="wrap_content"
         android:text="Graph" />
     
-        <Button
+    <!--<Button
         android:id="@+id/dataButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Data" />
+        android:text="Data" />-->
     
     <TextView
        	android:id="@+id/debugTextView"
