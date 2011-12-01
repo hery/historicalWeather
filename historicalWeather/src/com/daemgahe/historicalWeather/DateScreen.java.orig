@@ -17,11 +17,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -106,7 +103,7 @@ public class DateScreen extends Activity
         		try {
 					getData();
 					//debug.setText(graphData);
-					//GoToGraphScreen();
+					GoToGraphScreen();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -123,7 +120,7 @@ public class DateScreen extends Activity
         		try {
 					getData();
 					//debug.setText(graphData);
-					//GoToDataScreen();
+					GoToDataScreen();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -133,7 +130,6 @@ public class DateScreen extends Activity
         
     }
     
-    /*
     protected void GoToDataScreen()
     {
     	Bundle bundle = new Bundle();
@@ -151,7 +147,6 @@ public class DateScreen extends Activity
     	dateToGraph.putExtras(bundle);
     	startActivityForResult(dateToGraph,0);
     }
-    */
     
     public void getData() throws Exception
     {
