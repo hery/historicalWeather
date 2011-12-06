@@ -22,6 +22,13 @@
         android:layout_height="wrap_content"
         android:text="@string/submit"/>
     
+	<ProgressBar
+		 android:layout_width="fill_parent"
+		 android:layout_height="wrap_content"
+		 style="?android:attr/progressBarStyleHorizontal"
+		 android:id="@+id/progressBar"
+		 android:max="100"/> 
+    
     <TextView
         android:id="@+id/testString"
         android:layout_width="fill_parent"

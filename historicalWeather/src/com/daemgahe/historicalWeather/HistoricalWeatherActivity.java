@@ -15,17 +15,21 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class HistoricalWeatherActivity extends Activity 
 {
-	// doing some modifications...
 	private Button submitZipCodeButton;
+	private ProgressBar myProgressBar;
 	private EditText ZipCodeField;
 	private static final String DEVKEY = "bf90362e52a6012e";
 	private String zipCode;
@@ -44,7 +48,22 @@ public class HistoricalWeatherActivity extends Activity
         submitZipCodeButton = (Button) findViewById(R.id.submit1);
         ZipCodeField = (EditText) findViewById(R.id.zipcodefield);
         testString = (TextView) findViewById(R.id.testString);
+        
+        myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        myProgressBar.setProgress(0);
       
+        
+        /** submitZipCodeButton.setOnClickListener
+        (new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				new BackgroundAsyncTask().execute();
+				submitZipCodeButton.setClickable(false);
+			}
+		}); */
+        
         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
         {
@@ -70,6 +89,7 @@ public class HistoricalWeatherActivity extends Activity
 					// TODO Auto-generated catch block
 					Log.v("Weather Graph", "Inside successful zip catch block");
 					e.printStackTrace();
+					testString.setText("Error.");
 				}
         		
         		// Declare and initialize JSONObject 
@@ -142,5 +162,44 @@ public class HistoricalWeatherActivity extends Activity
     		}
     	} 
     }
+    
+    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Void>
+    {
+    	int myProgress;
+    	
+    	@Override
+    	protected void onPostExecute(Void result)
+    	{
+    		   Toast.makeText(HistoricalWeatherActivity.this,
+    			         "onPostExecute", Toast.LENGTH_LONG).show();
+    			   submitZipCodeButton.setClickable(true);
+    	}
+    	
+    	@Override
+    	protected void onPreExecute()
+    	{
+    	//	   Toast.makeText(HistoricalWeatherActivity.this,
+    	//		         "onPreExecute", Toast.LENGTH_LONG).show();
+    			   myProgress = 0;
+    	}
+    	
+    	@Override
+    	protected Void doInBackground(Void... params)
+    	{
+    		while(myProgress<100)
+    		{
+    			myProgress++;
+    			publishProgress(myProgress);
+    			SystemClock.sleep(10);
+    		}
+    		return null;
+    	}
+    	
+    	@Override
+    	protected void onProgressUpdate(Integer... values)
+    	{
+    		myProgressBar.setProgress(values[0]);
+    	}
+    } 
      
 }
