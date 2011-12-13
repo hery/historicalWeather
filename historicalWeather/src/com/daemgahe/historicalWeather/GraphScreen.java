@@ -81,6 +81,9 @@ public class GraphScreen extends Activity {
         theGraph.getGraphWidget().getGridLinePaint().setPathEffect(new DashPathEffect(new float[]{1,1}, 1));
         theGraph.getGraphWidget().getDomainOriginLinePaint().setColor(Color.BLACK);
         theGraph.getGraphWidget().getRangeOriginLinePaint().setColor(Color.BLACK);
+        theGraph.getGraphWidget().setPaddingTop(15);
+        theGraph.getGraphWidget().setPaddingRight(32);
+        theGraph.getGraphWidget().setPaddingBottom(4);
  
         theGraph.setBorderStyle(Plot.BorderStyle.SQUARE, null, null);
         theGraph.getBorderPaint().setStrokeWidth(1);
@@ -88,12 +91,10 @@ public class GraphScreen extends Activity {
         theGraph.getBorderPaint().setColor(Color.WHITE);
  
         // Create a formatter to use for drawing a series using LineAndPointRenderer:
-        /*
-        LineAndPointFormatter series1Format = new LineAndPointFormatter(
-                Color.rgb(0, 100, 0),                   // line color
-                Color.rgb(0, 100, 0),                   // point color
+        LineAndPointFormatter formatter = new LineAndPointFormatter(
+                Color.rgb(0, 0, 0),                   // line color
+                Color.rgb(0, 0, 255),                   // point color
                 Color.rgb(100, 200, 0));                // fill color
-        */
  
  
         // setup our line fill paint to be a slightly transparent gradient:
@@ -101,9 +102,8 @@ public class GraphScreen extends Activity {
         lineFill.setAlpha(200);
         lineFill.setShader(new LinearGradient(0, 0, 0, 250, Color.WHITE, Color.GREEN, Shader.TileMode.MIRROR));
  
-        LineAndPointFormatter formatter  = new LineAndPointFormatter(Color.rgb(0, 0,0), Color.BLUE, Color.RED);
         formatter.setFillPaint(lineFill);
-        theGraph.getGraphWidget().setPaddingRight(2);
+        formatter.getVertexPaint().setStrokeWidth(3);
         theGraph.addSeries(avgTempSeries, formatter);
  
         // draw a domain tick for each month:
