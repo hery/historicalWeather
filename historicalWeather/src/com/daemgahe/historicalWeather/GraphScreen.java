@@ -32,7 +32,7 @@ public class GraphScreen extends Activity {
 	private XYPlot theGraph;
 	private Button exitButton;
 	private Button startOverButton;
-	//private TextView debug;
+	//private TextView;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) 

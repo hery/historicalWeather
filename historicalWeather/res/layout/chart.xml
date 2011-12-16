@@ -4,11 +4,11 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-    <TextView
+<!--    <TextView
        	android:id="@+id/debug"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="debug"/> 	
+        android:text="debug"/> 	-->
         
     <com.androidplot.xy.XYPlot
 	    android:id="@+id/plot"
