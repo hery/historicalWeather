@@ -1,9 +1,15 @@
 package com.daemgahe.historicalWeather;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,7 +43,8 @@ public class HistoricalWeatherActivity extends Activity
 	private TextView testString;
 	private String myIcao;	// debug string
 	private String jsonOutput;
-	
+	private ByteArrayOutputStream outputStream;
+	private String outputStreamString;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -53,18 +60,27 @@ public class HistoricalWeatherActivity extends Activity
         myProgressBar.setProgress(0);
       
         
-        /** submitZipCodeButton.setOnClickListener
+         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				zipCode = ZipCodeField.getText().toString();
+				if (zipCode.length() != 5)
+        		{
+        			Log.v("Weather Graph", "Inside invalid zip try block");
+        			URL = "Invalid zipcode length.";
+        			testString.setText(URL);
+        		} else
+        		{
 				new BackgroundAsyncTask().execute();
 				submitZipCodeButton.setClickable(false);
+        		}
 			}
-		}); */
+		}); 
         
-        submitZipCodeButton.setOnClickListener
+/**        submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
         {
         	@Override
@@ -116,8 +132,8 @@ public class HistoricalWeatherActivity extends Activity
         		}
         	}
         }
-        );  
-    } 
+        );  */ 
+    }  
     
     protected void GoToDateScreen()
     {
@@ -130,49 +146,38 @@ public class HistoricalWeatherActivity extends Activity
     
     public void getJson() throws Exception
     {
-    	BufferedReader in = null;
-    	try
-    	{
-    		HttpClient client = new DefaultHttpClient ();
-    		HttpGet request = new HttpGet();
-    		request.setURI(new URI(URL));
-    		HttpResponse response = client.execute(request);
-    		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer sb = new StringBuffer("");
-			String line = "";
-			String NL = System.getProperty("line.separator");
-			while ((line = in.readLine()) != null)
-			{
-				sb.append(line + NL);
-				Log.v("Weather Graph", line+NL);
-			}
-			in.close();
-			jsonOutput = new String(sb.toString());
-    	} finally 
-    	{
-    		if (in != null) 
-    		{
-    			try
-    			{
-    				in.close();
-    			} catch (IOException e)
-    			{
-    				e.printStackTrace();
-    			}
-    		}
-    	} 
+ 
     }
     
-    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, Void>
+    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, String>
     {
     	int myProgress;
     	
     	@Override
-    	protected void onPostExecute(Void result)
-    	{
-    		   Toast.makeText(HistoricalWeatherActivity.this,
-    			         "onPostExecute", Toast.LENGTH_LONG).show();
-    			   submitZipCodeButton.setClickable(true);
+    	protected void onPostExecute(String result)
+    	{	// Parse Json file
+    		// Declare and initialize JSONObject 
+/**    		JSONObject jObject = null;
+    		
+    		try {
+    			// Create JSONObject from the JSON file string resulting from the zipcode get request
+				jObject = new JSONObject(outputStreamString);
+				JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
+				JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
+				JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
+				JSONArray stationsArray = airportObject.getJSONArray("station");
+				myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
+				//myString = locationObject.getString("tz_long");	// debug ok
+				testString.setText(myIcao);		// debug only
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				myIcao = "Error.";
+				testString.setText(myIcao);
+			}       		    		
+    		 // the value of myIcao is passed with the intent, in GoToDateScreen() 
+    		 GoToDateScreen();   */
+    		testString.setText("OutputStreamString: " + outputStreamString);
     	}
     	
     	@Override
@@ -184,15 +189,34 @@ public class HistoricalWeatherActivity extends Activity
     	}
     	
     	@Override
-    	protected Void doInBackground(Void... params)
-    	{
-    		while(myProgress<100)
+    	protected String doInBackground(Void... params)
+    	{	//	get Json file
+    		int count;
+    		try {
+    		URL url = new URL(URL);
+    		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    		int length = connection.getContentLength();
+    		
+    		InputStream input = new BufferedInputStream(url.openStream());
+    		OutputStream outputStream = new ByteArrayOutputStream();
+    		
+    		byte data[] = new byte[1024];
+    		long total = 0;
+    		
+    		while((count = input.read(data)) != -1)
     		{
-    			myProgress++;
-    			publishProgress(myProgress);
-    			SystemClock.sleep(10);
+    			total += count;
+    			publishProgress((int)(total*100/length));
+    			outputStream.write(data, 0, count);
     		}
-    		return null;
+    		
+    		outputStream.flush();
+    		outputStreamString = outputStream.toString();
+    		outputStream.close();
+    		
+    		input.close();
+    		} catch (Exception e) {}
+			return outputStreamString;
     	}
     	
     	@Override
@@ -200,6 +224,8 @@ public class HistoricalWeatherActivity extends Activity
     	{
     		myProgressBar.setProgress(values[0]);
     	}
+    	
+
     } 
      
 }
