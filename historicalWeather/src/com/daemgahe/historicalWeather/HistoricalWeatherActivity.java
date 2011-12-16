@@ -146,7 +146,37 @@ public class HistoricalWeatherActivity extends Activity
     
     public void getJson() throws Exception
     {
- 
+    	BufferedReader in = null;
+    	try
+    	{
+    		HttpClient client = new DefaultHttpClient ();
+    		HttpGet request = new HttpGet();
+    		request.setURI(new URI(URL));
+    		HttpResponse response = client.execute(request);
+    		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			StringBuffer sb = new StringBuffer("");
+			String line = "";
+			String NL = System.getProperty("line.separator");
+			while ((line = in.readLine()) != null)
+			{
+				sb.append(line + NL);
+				Log.v("Weather Graph", line+NL);
+			}
+			in.close();
+			jsonOutput = new String(sb.toString());
+    	} finally 
+    	{
+    		if (in != null) 
+    		{
+    			try
+    			{
+    				in.close();
+    			} catch (IOException e)
+    			{
+    				e.printStackTrace();
+    			}
+    		}
+    	}  
     }
     
     public class BackgroundAsyncTask extends AsyncTask<Void, Integer, String>
