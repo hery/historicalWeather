@@ -60,7 +60,7 @@ public class HistoricalWeatherActivity extends Activity
         myProgressBar.setProgress(0);
       
         
-         submitZipCodeButton.setOnClickListener
+/**         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() {
 			
 			@Override
@@ -78,9 +78,9 @@ public class HistoricalWeatherActivity extends Activity
 				submitZipCodeButton.setClickable(false);
         		}
 			}
-		}); 
+		}); 	*/
         
-/**        submitZipCodeButton.setOnClickListener
+        submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
         {
         	@Override
@@ -132,7 +132,7 @@ public class HistoricalWeatherActivity extends Activity
         		}
         	}
         }
-        );  */ 
+        );   
     }  
     
     protected void GoToDateScreen()

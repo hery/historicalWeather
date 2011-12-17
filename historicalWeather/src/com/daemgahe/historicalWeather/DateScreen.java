@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -30,8 +31,8 @@ public class DateScreen extends Activity
 	private TextView debug;
 	//private String myURL;
 	
-	private EditText startDateField;
-	private EditText endDateField;
+	private DatePicker startDateField;
+	private DatePicker endDateField;
 	
 	private DateFormat df;
 	private Calendar calendar;
@@ -56,7 +57,7 @@ public class DateScreen extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.date);
         
-        startDateField = (EditText) findViewById(R.id.start_date);
+        startDateField = (DatePicker) findViewById(R.id.start_date);
         df = new SimpleDateFormat("yyyy-MM-dd");
         endDate = new Date();
         calendar = Calendar.getInstance();
@@ -64,10 +65,22 @@ public class DateScreen extends Activity
         calendar.roll(Calendar.YEAR, -1);
         startDate = calendar.getTime();
         String startDateValue = df.format(startDate);
-        startDateField.setText(startDateValue);
-        endDateField = (EditText) findViewById(R.id.end_date);
+        //startDateField.setText(startDateValue);
+        endDateField = (DatePicker) findViewById(R.id.end_date);
         String endDateValue = df.format(endDate);
-        endDateField.setText(endDateValue);
+        //endDateField.setText(endDateValue);
+        
+        calendar.setTime(startDate);
+        startyear = String.format("%04d", calendar.get(Calendar.YEAR));
+        startmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+        startday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+        calendar.setTime(endDate);
+        endyear = String.format("%04d", calendar.get(Calendar.YEAR));
+        endmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+        endday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+        
+        startDateField.init(Integer.parseInt(startyear), Integer.parseInt(startmonth), Integer.parseInt(startday), null);
+        endDateField.init(Integer.parseInt(endyear), Integer.parseInt(endmonth), Integer.parseInt(endday), null);        
         
         // Create a bundle to get the intent parameters
         Bundle bundle = this.getIntent().getExtras();
@@ -83,8 +96,9 @@ public class DateScreen extends Activity
         	@Override
 			public void onClick(View v) 
         	{
-                String startDateValue1 = startDateField.getText().toString();
-                String endDateValue1 = endDateField.getText().toString();
+                String startDateValue1 = String.format("%04d-%02d-%02d", startDateField.getYear(), startDateField.getMonth(), startDateField.getDayOfMonth());
+                String endDateValue1 = String.format("%04d-%02d-%02d", endDateField.getYear(), endDateField.getMonth(), endDateField.getDayOfMonth());
+
                 try {
 					startDate = df.parse(startDateValue1);
 	                endDate = df.parse(endDateValue1);

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:text="Start date" />
     
-    <EditText 
+    <DatePicker 
         android:id="@+id/start_date"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:text="End date" />  
 
-    <EditText
+    <DatePicker
         android:id="@+id/end_date"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
