@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -36,24 +37,33 @@ public class HistoricalWeatherActivity extends Activity
 {
 	private Button submitZipCodeButton;
 	private ProgressBar myProgressBar;
-	private EditText ZipCodeField;
+	private EditText zipCodeField;
 	private static final String DEVKEY = "bf90362e52a6012e";
+	private String savedZipCode;
 	private String zipCode;
 	private String URL;
 	private TextView testString;
-	private String myIcao;	// debug string
+	private String savedIcao;
+	private String icao;
 	private String jsonOutput;
 	private ByteArrayOutputStream outputStream;
 	private String outputStreamString;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        savedZipCode = settings.getString("zipCode", "");
+        savedIcao = settings.getString("icao", "");
+
     
         submitZipCodeButton = (Button) findViewById(R.id.submit1);
-        ZipCodeField = (EditText) findViewById(R.id.zipcodefield);
+        zipCodeField = (EditText) findViewById(R.id.zipcodefield);
+        zipCodeField.setText(savedZipCode);
         testString = (TextView) findViewById(R.id.testString);
         
         myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -87,7 +97,7 @@ public class HistoricalWeatherActivity extends Activity
         	public void onClick(View v) 
         	{
         		
-        		zipCode = ZipCodeField.getText().toString();
+        		zipCode = zipCodeField.getText().toString();
         		
         		if (zipCode.length() != 5)
         		{
@@ -96,40 +106,48 @@ public class HistoricalWeatherActivity extends Activity
         			testString.setText(URL);
         		} else
         		{
-        		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
-        		try {
-        			Log.v("Weather Graph", "Inside successful zip try block");
-					getJson();
-					// testString.setText(jsonOutput); // debug line to show get request is working
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					Log.v("Weather Graph", "Inside successful zip catch block");
-					e.printStackTrace();
-					testString.setText("Error.");
-				}
-        		
-        		// Declare and initialize JSONObject 
-        		JSONObject jObject = null;
-        		
-        		try {
-        			// Create JSONObject from the JSON file string resulting from the zipcode get request
-					jObject = new JSONObject(jsonOutput);
-					JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
-					JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
-					JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
-					JSONArray stationsArray = airportObject.getJSONArray("station");
-					myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
-					//myString = locationObject.getString("tz_long");	// debug ok
-					testString.setText(myIcao);		// debug only
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					myIcao = "Error.";
-					testString.setText(myIcao);
-				}       		    		
-        		 // the value of myIcao is passed with the intent, in GoToDateScreen() 
-        		 GoToDateScreen();  
-        		}
+        			if (!zipCode.equals(savedZipCode))
+        			{
+		        		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
+		        		try {
+		        			Log.v("Weather Graph", "Inside successful zip try block");
+							getJson();
+							// testString.setText(jsonOutput); // debug line to show get request is working
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							Log.v("Weather Graph", "Inside successful zip catch block");
+							e.printStackTrace();
+							testString.setText("Error.");
+						}
+		        		
+		        		// Declare and initialize JSONObject 
+		        		JSONObject jObject = null;
+		        		
+		        		try {
+		        			// Create JSONObject from the JSON file string resulting from the zipcode get request
+							jObject = new JSONObject(jsonOutput);
+							JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
+							JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
+							JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
+							JSONArray stationsArray = airportObject.getJSONArray("station");
+							icao = stationsArray.getJSONObject(0).getString("icao").toString();
+							//myString = locationObject.getString("tz_long");	// debug ok
+							testString.setText(icao);		// debug only
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							icao = "Error.";
+							testString.setText(icao);
+						}
+        			}
+        			else
+        			{
+        				icao = savedIcao;
+        			}
+	        		
+					// the value of icao is passed with the intent, in GoToDateScreen() 
+					GoToDateScreen();  
+	        	}
         	}
         }
         );   
@@ -137,8 +155,14 @@ public class HistoricalWeatherActivity extends Activity
     
     protected void GoToDateScreen()
     {
+    	SharedPreferences settings = getPreferences(MODE_PRIVATE);
+    	SharedPreferences.Editor editor = settings.edit();
+    	editor.putString("zipCode", zipCode);
+    	editor.putString("icao", icao);
+    	editor.commit();
+    	
     	Bundle bundle = new Bundle();
-    	bundle.putString("icao", myIcao);
+    	bundle.putString("icao", icao);
     	Intent zipcodeToDate = new Intent(this, DateScreen.class);
     	zipcodeToDate.putExtras(bundle);
     	startActivityForResult(zipcodeToDate,0);
