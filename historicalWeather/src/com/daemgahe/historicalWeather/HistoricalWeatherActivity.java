@@ -259,10 +259,6 @@ public class HistoricalWeatherActivity extends Activity
     	@Override
     	protected String doInBackground(String... theURL)
     	{
-
-// 		   ourToast = Toast.makeText(HistoricalWeatherActivity.this,
-//		         "Loading, please wait...", Toast.LENGTH_LONG);
-//		   ourToast.show();
     		BufferedReader in = null;
         	try
         	{
