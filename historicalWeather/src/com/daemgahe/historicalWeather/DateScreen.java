@@ -109,11 +109,11 @@ public class DateScreen extends Activity
 				}
                 calendar.setTime(startDate);
                 startyear = String.format("%04d", calendar.get(Calendar.YEAR));
-                startmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+                startmonth = String.format("%02d", calendar.get(Calendar.MONTH)+2);
                 startday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
                 calendar.setTime(endDate);
                 endyear = String.format("%04d", calendar.get(Calendar.YEAR));
-                endmonth = String.format("%02d", calendar.get(Calendar.MONTH));
+                endmonth = String.format("%02d", calendar.get(Calendar.MONTH)+2);
                 endday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
                 
         		  //debug.setText(completeURL);
