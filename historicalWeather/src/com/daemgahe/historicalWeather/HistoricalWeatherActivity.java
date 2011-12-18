@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.http.HttpResponse;
@@ -48,6 +49,7 @@ public class HistoricalWeatherActivity extends Activity
 	private String jsonOutput;
 	private ByteArrayOutputStream outputStream;
 	private String outputStreamString;
+
 	
     /** Called when the activity is first created. */
     @Override
@@ -70,13 +72,13 @@ public class HistoricalWeatherActivity extends Activity
         myProgressBar.setProgress(0);
       
         
-/**         submitZipCodeButton.setOnClickListener
+         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				zipCode = ZipCodeField.getText().toString();
+				zipCode = zipCodeField.getText().toString();
 				if (zipCode.length() != 5)
         		{
         			Log.v("Weather Graph", "Inside invalid zip try block");
@@ -84,12 +86,21 @@ public class HistoricalWeatherActivity extends Activity
         			testString.setText(URL);
         		} else
         		{
-				new BackgroundAsyncTask().execute();
-				submitZipCodeButton.setClickable(false);
+        			
+        			if (!zipCode.equals(savedZipCode))
+        			{
+        				URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
+        				new BackgroundAsyncTask().execute(URL);
+        				submitZipCodeButton.setClickable(false);
+        			} else {
+        				icao = savedIcao;
+        				GoToDateScreen(); 
+        			}
+				
         		}
 			}
-		}); 	*/
-        
+		}); 	
+ /**       
         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
         {
@@ -150,7 +161,8 @@ public class HistoricalWeatherActivity extends Activity
 	        	}
         	}
         }
-        );   
+        ); 
+*/
     }  
     
     protected void GoToDateScreen()
@@ -203,82 +215,101 @@ public class HistoricalWeatherActivity extends Activity
     	}  
     }
     
-    public class BackgroundAsyncTask extends AsyncTask<Void, Integer, String>
+    public class BackgroundAsyncTask extends AsyncTask<String, Integer, String>
     {
-    	int myProgress;
     	
-    	@Override
-    	protected void onPostExecute(String result)
-    	{	// Parse Json file
-    		// Declare and initialize JSONObject 
-/**    		JSONObject jObject = null;
-    		
-    		try {
-    			// Create JSONObject from the JSON file string resulting from the zipcode get request
-				jObject = new JSONObject(outputStreamString);
-				JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
-				JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
-				JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
-				JSONArray stationsArray = airportObject.getJSONArray("station");
-				myIcao = stationsArray.getJSONObject(0).getString("icao").toString();
-				//myString = locationObject.getString("tz_long");	// debug ok
-				testString.setText(myIcao);		// debug only
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				myIcao = "Error.";
-				testString.setText(myIcao);
-			}       		    		
-    		 // the value of myIcao is passed with the intent, in GoToDateScreen() 
-    		 GoToDateScreen();   */
-    		testString.setText("OutputStreamString: " + outputStreamString);
-    	}
+    	private Toast ourToast;
     	
     	@Override
     	protected void onPreExecute()
     	{
-    	//	   Toast.makeText(HistoricalWeatherActivity.this,
-    	//		         "onPreExecute", Toast.LENGTH_LONG).show();
-    			   myProgress = 0;
+	    		   this.ourToast = Toast.makeText(HistoricalWeatherActivity.this,
+	    			         "Parsing JSON file, please wait...", Toast.LENGTH_LONG);
+	    		   
+	    		   ourToast.show();
     	}
     	
     	@Override
-    	protected String doInBackground(Void... params)
-    	{	//	get Json file
-    		int count;
+    	protected void onPostExecute(String result)
+    	{	
+    		JSONObject jObject = null;
+    		
     		try {
-    		URL url = new URL(URL);
-    		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    		int length = connection.getContentLength();
-    		
-    		InputStream input = new BufferedInputStream(url.openStream());
-    		OutputStream outputStream = new ByteArrayOutputStream();
-    		
-    		byte data[] = new byte[1024];
-    		long total = 0;
-    		
-    		while((count = input.read(data)) != -1)
-    		{
-    			total += count;
-    			publishProgress((int)(total*100/length));
-    			outputStream.write(data, 0, count);
-    		}
-    		
-    		outputStream.flush();
-    		outputStreamString = outputStream.toString();
-    		outputStream.close();
-    		
-    		input.close();
-    		} catch (Exception e) {}
-			return outputStreamString;
+    			// Create JSONObject from the JSON file string resulting from the zipcode get request
+				jObject = new JSONObject(jsonOutput);
+				JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
+				JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
+				JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
+				JSONArray stationsArray = airportObject.getJSONArray("station");
+				icao = stationsArray.getJSONObject(0).getString("icao").toString();
+				//myString = locationObject.getString("tz_long");	// debug ok
+				testString.setText(icao);		// debug only
+				try { this.ourToast.cancel(); } catch (Exception exc) { exc.printStackTrace(); }
+				GoToDateScreen();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				icao = "Error.";
+				testString.setText(icao);				 
+			} 		
     	}
     	
+    	
+    	
     	@Override
+    	protected String doInBackground(String... theURL)
+    	{
+
+// 		   ourToast = Toast.makeText(HistoricalWeatherActivity.this,
+//		         "Loading, please wait...", Toast.LENGTH_LONG);
+//		   ourToast.show();
+    		BufferedReader in = null;
+        	try
+        	{
+        		HttpClient client = new DefaultHttpClient ();
+        		HttpGet request = new HttpGet();
+        		request.setURI(new URI(theURL[0]));
+        		HttpResponse response = client.execute(request);
+        		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+    			StringBuffer sb = new StringBuffer("");
+    			String line = "";
+    			String NL = System.getProperty("line.separator");
+    			while ((line = in.readLine()) != null)
+    			{
+    				sb.append(line + NL);
+    				Log.v("Weather Graph", line+NL);
+    			}
+    			in.close();
+    			jsonOutput = new String(sb.toString());
+        	} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally 
+        	{
+        		if (in != null) 
+        		{
+        			try
+        			{
+        				in.close();
+        				
+        			} catch (IOException e)
+        			{
+        				e.printStackTrace();
+        			}
+        		}
+        	}
+        	return jsonOutput;
+    	}
+    	
+/**    	@Override
     	protected void onProgressUpdate(Integer... values)
     	{
     		myProgressBar.setProgress(values[0]);
     	}
-    	
+*/    	
 
     } 
      
