@@ -15,12 +15,14 @@
         android:layout_height="wrap_content"
         android:selectAllOnFocus="true"
         android:inputType="date"
+        android:layout_marginTop="20dip"
         />
  
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="End date" />  
+        android:text="End date"
+        android:layout_marginTop="20dip" />  
 
     <DatePicker
         android:id="@+id/end_date"
@@ -28,13 +30,17 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:selectAllOnFocus="true"
+        android:layout_marginTop="20dip"
         />
 
     <Button
         android:id="@+id/submitButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Graph" />
+        android:text="Graph"
+        android:layout_marginTop="20dip" 
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"/>
     
     <!--<Button
         android:id="@+id/dataButton"

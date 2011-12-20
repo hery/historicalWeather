@@ -34,7 +34,7 @@ import android.widget.Toast;
 public class HistoricalWeatherActivity extends Activity 
 {
 	private Button submitZipCodeButton;
-	private ProgressBar myProgressBar;
+	//private ProgressBar myProgressBar;
 	private EditText zipCodeField;
 	private static final String DEVKEY = "bf90362e52a6012e";
 	private String savedZipCode;
@@ -67,8 +67,8 @@ public class HistoricalWeatherActivity extends Activity
         zipCodeField.setText(savedZipCode);
         testString = (TextView) findViewById(R.id.testString);
         
-        myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        myProgressBar.setProgress(0);
+       // myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+       // myProgressBar.setProgress(0);
         
         check = new CheckConnectivity();
       

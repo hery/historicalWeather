@@ -19,7 +19,6 @@ public final class R {
         public static final int end_date=0x7f050004;
         public static final int exitButton=0x7f050001;
         public static final int plot=0x7f050000;
-        public static final int progressBar=0x7f05000d;
         public static final int radioButton1=0x7f050008;
         public static final int radioButton2=0x7f050009;
         public static final int radioButton3=0x7f05000a;
@@ -27,7 +26,7 @@ public final class R {
         public static final int start_date=0x7f050003;
         public static final int submit1=0x7f05000c;
         public static final int submitButton=0x7f050005;
-        public static final int testString=0x7f05000e;
+        public static final int testString=0x7f05000d;
         public static final int textView1=0x7f050007;
         public static final int zipcodefield=0x7f05000b;
     }
