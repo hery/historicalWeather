@@ -245,7 +245,7 @@ public class HistoricalWeatherActivity extends Activity
 	    		   this.ourToast = Toast.makeText(HistoricalWeatherActivity.this,
 	    			         "Parsing JSON file, please wait...", Toast.LENGTH_LONG);
 	    		   
-	    		   ourToast.show();
+	    		   ourToast.show();	    		   
     	}
     	
     	@Override
@@ -268,8 +268,9 @@ public class HistoricalWeatherActivity extends Activity
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				icao = "Error.";
-				testString.setText(icao);				 
+				Toast.makeText(HistoricalWeatherActivity.this,
+	   			         "Invalid zipcode, try again.", Toast.LENGTH_LONG).show();	
+				submitZipCodeButton.setClickable(true);
 			} 		
     	}
     	   	
@@ -282,7 +283,7 @@ public class HistoricalWeatherActivity extends Activity
         		HttpClient client = new DefaultHttpClient ();
         		HttpGet request = new HttpGet();
         		request.setURI(new URI(theURL[0]));
-
+        		
         			HttpResponse response = client.execute(request);
         			in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
      		
