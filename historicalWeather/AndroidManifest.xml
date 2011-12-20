@@ -22,4 +22,5 @@
         <activity android:name="DataScreen" android:label="@string/dataScreenTitle"></activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

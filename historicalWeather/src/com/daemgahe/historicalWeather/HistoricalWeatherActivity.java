@@ -11,18 +11,23 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -49,6 +54,8 @@ public class HistoricalWeatherActivity extends Activity
 	private String jsonOutput;
 	private ByteArrayOutputStream outputStream;
 	private String outputStreamString;
+	private Boolean conn;
+	private Toast connToast;
 
 	
     /** Called when the activity is first created. */
@@ -70,6 +77,9 @@ public class HistoricalWeatherActivity extends Activity
         
         myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         myProgressBar.setProgress(0);
+        
+        CheckConnectivity check = new CheckConnectivity();
+        conn = check.checkNow(this.getApplicationContext());
       
         
          submitZipCodeButton.setOnClickListener
@@ -77,6 +87,7 @@ public class HistoricalWeatherActivity extends Activity
 			
 			@Override
 			public void onClick(View v) {
+
 				// TODO Auto-generated method stub
 				zipCode = zipCodeField.getText().toString();
 				if (zipCode.length() != 5)
@@ -89,17 +100,25 @@ public class HistoricalWeatherActivity extends Activity
         			
         			if (!zipCode.equals(savedZipCode))
         			{
-        				URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
-        				new BackgroundAsyncTask().execute(URL);
+        				URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");	
+        				if (conn)
+        				{
+        				new BackgroundAsyncTask().execute(URL);     				
         				submitZipCodeButton.setClickable(false);
+        				} else 
+        				{
+        					connToast = Toast.makeText(HistoricalWeatherActivity.this,
+        		    			         "Check your connection.", Toast.LENGTH_LONG);
+        					connToast.show();
+        				}
         			} else {
         				icao = savedIcao;
         				GoToDateScreen(); 
         			}
 				
         		}
-			}
-		}); 	
+
+			}}); 	
  /**       
         submitZipCodeButton.setOnClickListener
         (new View.OnClickListener() 
@@ -253,9 +272,7 @@ public class HistoricalWeatherActivity extends Activity
 				testString.setText(icao);				 
 			} 		
     	}
-    	
-    	
-    	
+    	   	
     	@Override
     	protected String doInBackground(String... theURL)
     	{
@@ -265,8 +282,10 @@ public class HistoricalWeatherActivity extends Activity
         		HttpClient client = new DefaultHttpClient ();
         		HttpGet request = new HttpGet();
         		request.setURI(new URI(theURL[0]));
-        		HttpResponse response = client.execute(request);
-        		in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+        			HttpResponse response = client.execute(request);
+        			in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+     		
     			StringBuffer sb = new StringBuffer("");
     			String line = "";
     			String NL = System.getProperty("line.separator");
@@ -306,7 +325,29 @@ public class HistoricalWeatherActivity extends Activity
     		myProgressBar.setProgress(values[0]);
     	}
 */    	
-
+    	
     } 
+    public class CheckConnectivity{
+        ConnectivityManager connectivityManager;
+        NetworkInfo wifiInfo, mobileInfo;
+
+        public Boolean checkNow(Context con){
      
+            try{
+                connectivityManager = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
+                wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);   
+     
+                if(wifiInfo.isConnected() || mobileInfo.isConnected())
+                {
+                    return true;
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+     
+            return false;
+        }
+    }
 }
