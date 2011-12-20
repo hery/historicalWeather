@@ -1,17 +1,10 @@
 package com.daemgahe.historicalWeather;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,7 +23,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -52,10 +44,9 @@ public class HistoricalWeatherActivity extends Activity
 	private String savedIcao;
 	private String icao;
 	private String jsonOutput;
-	private ByteArrayOutputStream outputStream;
-	private String outputStreamString;
 	private Boolean conn;
 	private Toast connToast;
+	private Toast validToast;
 
 	
     /** Called when the activity is first created. */
@@ -88,13 +79,14 @@ public class HistoricalWeatherActivity extends Activity
 			@Override
 			public void onClick(View v) {
 
-				// TODO Auto-generated method stub
 				zipCode = zipCodeField.getText().toString();
-				if (zipCode.length() != 5)
+				if (!zipCode.matches("\\d{5}"))
         		{
         			Log.v("Weather Graph", "Inside invalid zip try block");
-        			URL = "Invalid zipcode length.";
-        			testString.setText(URL);
+        			validToast = Toast.makeText(HistoricalWeatherActivity.this,
+        					"Zip Code must be a 5 digit number.", 
+        					Toast.LENGTH_LONG);
+        			validToast.show();
         		} else
         		{
         			
@@ -119,69 +111,6 @@ public class HistoricalWeatherActivity extends Activity
         		}
 
 			}}); 	
- /**       
-        submitZipCodeButton.setOnClickListener
-        (new View.OnClickListener() 
-        {
-        	@Override
-        	public void onClick(View v) 
-        	{
-        		
-        		zipCode = zipCodeField.getText().toString();
-        		
-        		if (zipCode.length() != 5)
-        		{
-        			Log.v("Weather Graph", "Inside invalid zip try block");
-        			URL = "Invalid zipcode length.";
-        			testString.setText(URL);
-        		} else
-        		{
-        			if (!zipCode.equals(savedZipCode))
-        			{
-		        		URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
-		        		try {
-		        			Log.v("Weather Graph", "Inside successful zip try block");
-							getJson();
-							// testString.setText(jsonOutput); // debug line to show get request is working
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							Log.v("Weather Graph", "Inside successful zip catch block");
-							e.printStackTrace();
-							testString.setText("Error.");
-						}
-		        		
-		        		// Declare and initialize JSONObject 
-		        		JSONObject jObject = null;
-		        		
-		        		try {
-		        			// Create JSONObject from the JSON file string resulting from the zipcode get request
-							jObject = new JSONObject(jsonOutput);
-							JSONObject locationObject = jObject.getJSONObject("location");	// debug ok
-							JSONObject nearbyStationsObject = locationObject.getJSONObject("nearby_weather_stations");
-							JSONObject airportObject = nearbyStationsObject.getJSONObject("airport"); 
-							JSONArray stationsArray = airportObject.getJSONArray("station");
-							icao = stationsArray.getJSONObject(0).getString("icao").toString();
-							//myString = locationObject.getString("tz_long");	// debug ok
-							testString.setText(icao);		// debug only
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							icao = "Error.";
-							testString.setText(icao);
-						}
-        			}
-        			else
-        			{
-        				icao = savedIcao;
-        			}
-	        		
-					// the value of icao is passed with the intent, in GoToDateScreen() 
-					GoToDateScreen();  
-	        	}
-        	}
-        }
-        ); 
-*/
     }  
     
     protected void GoToDateScreen()
@@ -266,7 +195,6 @@ public class HistoricalWeatherActivity extends Activity
 				try { this.ourToast.cancel(); } catch (Exception exc) { exc.printStackTrace(); }
 				GoToDateScreen();
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				Toast.makeText(HistoricalWeatherActivity.this,
 	   			         "Invalid zipcode, try again.", Toast.LENGTH_LONG).show();	
@@ -319,13 +247,6 @@ public class HistoricalWeatherActivity extends Activity
         	}
         	return jsonOutput;
     	}
-    	
-/**    	@Override
-    	protected void onProgressUpdate(Integer... values)
-    	{
-    		myProgressBar.setProgress(values[0]);
-    	}
-*/    	
     	
     } 
     public class CheckConnectivity{

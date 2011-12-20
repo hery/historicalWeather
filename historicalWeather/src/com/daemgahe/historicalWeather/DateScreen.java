@@ -14,12 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.daemgahe.historicalWeather.HistoricalWeatherActivity.BackgroundAsyncTask;
-import com.daemgahe.historicalWeather.HistoricalWeatherActivity.CheckConnectivity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -112,11 +106,27 @@ public class DateScreen extends Activity
                 startyear = String.format("%04d", calendar.get(Calendar.YEAR));
                 startmonth = String.format("%02d", calendar.get(Calendar.MONTH)+1);
                 startday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+                Calendar cal2 = (Calendar) calendar.clone();
                 calendar.set(endDateField.getYear(), endDateField.getMonth(), endDateField.getDayOfMonth());
                 endDate = calendar.getTime();
                 endyear = String.format("%04d", calendar.get(Calendar.YEAR));
                 endmonth = String.format("%02d", calendar.get(Calendar.MONTH)+1);
                 endday = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH));
+                if (cal2.compareTo(calendar) == 1) {
+                	Toast toast = Toast.makeText(DateScreen.this,
+                			"End Date must be after start date.", 
+                			Toast.LENGTH_LONG);
+                	toast.show();
+                	return;
+                }
+                cal2.add(Calendar.YEAR, 1);
+                if (cal2.compareTo(calendar) == -1) {
+                	Toast toast = Toast.makeText(DateScreen.this,
+                			"Maximum historical data that can be pulled at one time is one year.", 
+                			Toast.LENGTH_LONG);
+                	toast.show();
+                	return;
+                }
                 
                 String host = "http://www.wunderground.com/history/airport/";
                 String file = "CustomHistory.html?";
@@ -124,18 +134,18 @@ public class DateScreen extends Activity
                 completeURL = String.format("%s%s/%s/%s/%s/%sdayend=%s&monthend=%s&yearend=%s%s",host,theIcao,startyear,startmonth,startday,file,endday,endmonth,endyear,urlEnd);
         		//debug.setText(completeURL);
                 if (conn) {
-        		try {
-    				new BackgroundAsyncTask().execute(completeURL);
-    				submitButton.setClickable(false);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        	} else {
-				connToast = Toast.makeText(DateScreen.this,
-   			         "Check your connection.", Toast.LENGTH_LONG);
-				connToast.show();
-        	}
+	        		try {
+	    				new BackgroundAsyncTask().execute(completeURL);
+	    				submitButton.setClickable(false);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        	} else {
+					connToast = Toast.makeText(DateScreen.this,
+	   			         "Check your connection.", Toast.LENGTH_LONG);
+					connToast.show();
+	        	}
         	}
         });
         
