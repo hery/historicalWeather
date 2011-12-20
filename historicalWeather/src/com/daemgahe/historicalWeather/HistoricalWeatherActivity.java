@@ -44,9 +44,10 @@ public class HistoricalWeatherActivity extends Activity
 	private String savedIcao;
 	private String icao;
 	private String jsonOutput;
-	private Boolean conn;
+	private boolean conn;
 	private Toast connToast;
 	private Toast validToast;
+	private CheckConnectivity check;
 
 	
     /** Called when the activity is first created. */
@@ -69,8 +70,7 @@ public class HistoricalWeatherActivity extends Activity
         myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         myProgressBar.setProgress(0);
         
-        CheckConnectivity check = new CheckConnectivity();
-        conn = check.checkNow(this.getApplicationContext());
+        check = new CheckConnectivity();
       
         
          submitZipCodeButton.setOnClickListener
@@ -92,7 +92,8 @@ public class HistoricalWeatherActivity extends Activity
         			
         			if (!zipCode.equals(savedZipCode))
         			{
-        				URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");	
+        				URL = String.format("%s%s%s%s%s", "http://api.wunderground.com/api/", DEVKEY,"/geolookup/q/", zipCode,".json");
+        		        conn = check.checkNow(HistoricalWeatherActivity.this.getApplicationContext());
         				if (conn)
         				{
         				new BackgroundAsyncTask().execute(URL);     				
@@ -111,7 +112,7 @@ public class HistoricalWeatherActivity extends Activity
         		}
 
 			}}); 	
-    }  
+    }
     
     protected void GoToDateScreen()
     {
@@ -148,8 +149,11 @@ public class HistoricalWeatherActivity extends Activity
 			}
 			in.close();
 			jsonOutput = new String(sb.toString());
-    	} finally 
-    	{
+    	} catch (IOException e) {
+			connToast = Toast.makeText(this,
+    			         "Error while connecting.", Toast.LENGTH_LONG);
+			connToast.show();
+    	} finally {
     		if (in != null) 
     		{
     			try
@@ -179,7 +183,14 @@ public class HistoricalWeatherActivity extends Activity
     	
     	@Override
     	protected void onPostExecute(String result)
-    	{	
+    	{
+    		if (jsonOutput == null) {
+				Toast.makeText(HistoricalWeatherActivity.this,
+						"Error while connecting.", Toast.LENGTH_LONG).show();	
+				submitZipCodeButton.setClickable(true);
+				return;
+    		}
+    		
     		JSONObject jObject = null;
     		
     		try {
@@ -205,6 +216,7 @@ public class HistoricalWeatherActivity extends Activity
     	@Override
     	protected String doInBackground(String... theURL)
     	{
+    		jsonOutput = null;
     		BufferedReader in = null;
         	try
         	{
@@ -247,20 +259,19 @@ public class HistoricalWeatherActivity extends Activity
         	}
         	return jsonOutput;
     	}
-    	
-    } 
-    public class CheckConnectivity{
+    }
+    
+    public class CheckConnectivity {
         ConnectivityManager connectivityManager;
-        NetworkInfo wifiInfo, mobileInfo;
+        NetworkInfo info;
 
-        public Boolean checkNow(Context con){
+        public boolean checkNow(Context con){
      
             try{
                 connectivityManager = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
-                wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);   
+                info = connectivityManager.getActiveNetworkInfo();
      
-                if(wifiInfo.isConnected() || mobileInfo.isConnected())
+                if(info != null && info.isAvailable() && info.isConnected())
                 {
                     return true;
                 }
